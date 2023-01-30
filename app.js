@@ -1,5 +1,11 @@
 "use strict";
 import { pass } from "./nothing.js";
+import * as dotenv from "dotenv";
+import axios from "axios";
+
+dotenv.config();
+
+const SLACK_WEBHOOK_URL = process.env.SLACK_WEBHOOK_URL;
 
 /**
  * This is the main entrypoint to your Probot app
@@ -8,12 +14,129 @@ import { pass } from "./nothing.js";
 module.exports = (app) => {
   app.log.info("Yay, the app was loaded!");
 
+  // On opening a new issue
+  app.on("issues.opened", async (context) => {
+    const issueComment = context.issue({
+      body: "Thanks for opening this issue! Someone from the team will be providing you with feedback shortly.",
+    });
+
+    axios.post(SLACK_WEBHOOK_URL, {
+      text: `New issue opened by ${context.payload.issue.user.login} in ${context.payload.repository.full_name}`,
+    });
+
+    return context.octokit.issues.createComment(issueComment);
+  });
+
+  // On closing an issue
+  app.on("issues.closed", async (context) => {
+    const issueComment = context.issue({
+      body: "Thanks for closing this issue! If you have any further questions, please feel free to open a new issue. We are always happy to help!",
+    });
+
+    return context.octokit.issues.createComment(issueComment);
+  });
+
+  // On opening a new pull request
+  app.on("pull_request.opened", async (context) => {
+    const issueComment = context.issue({
+      body: "Thanks for opening this pull request! Someone from the team will be providing you with feedback shortly.",
+    });
+
+    return context.octokit.issues.createComment(issueComment);
+  });
+
+  // On closing a pull request
+  app.on("pull_request.closed", async (context) => {
+    const issueComment = context.issue({
+      body: "Thanks for closing this pull request! If you have any further questions, please feel free to open a new issue. We are always happy to help!",
+    });
+
+    return context.octokit.issues.createComment(issueComment);
+  });
+
+  // On editing a pull request
+  app.on("pull_request.edited", async (context) => {
+    const issueComment = context.issue({
+      body: "Please wait for any GitHub Actions to complete before editing your pull request. Thanks for your patience!",
+    });
+
+    return context.octokit.issues.createComment(issueComment);
+  });
+
+  app.on("pull_request.ready_for_review", async (context) => {
+    const issueComment = context.issue({
+      body: "Thanks for making your pull request ready for review! Someone from the team will be providing you with feedback shortly.",
+    });
+
+    axios.post(SLACK_WEBHOOK_URL, {
+      text: `New pull request opened by ${context.payload.pull_request.user.login} in ${context.payload.repository.full_name}`,
+    });
+
+    return context.octokit.issues.createComment(issueComment);
+  });
+
+  // On repo being starred
+  app.on("star.created", async (context) => {
+    const owner = context.payload.repository.owner.login;
+    const repoName = context.payload.repository.name;
+
+    axios.post(SLACK_WEBHOOK_URL, {
+      text: `New star created by ${context.payload.sender.login} in ${context.payload.repository.full_name}`,
+    });
+
+    return;
+  });
+
+  // On repo being unstarred
+  app.on("star.deleted", async (context) => {
+    axios.post(SLACK_WEBHOOK_URL, {
+      text: `Star deleted by ${context.payload.sender.login} in ${context.payload.repository.full_name}`,
+    });
+
+    return;
+  });
+
+  // On creating a new fork
+  app.on("fork", async (context) => {
+    axios.post(SLACK_WEBHOOK_URL, {
+      text: `New fork created by ${context.payload.forkee.owner.login} of ${context.payload.repository.full_name}`,
+    });
+
+    return;
+  });
+
+  // On adding a label to an issue
+  app.on("label.created", async (context) => {
+    let issueComment = "";
+
+    // Get the label name
+    const labelName = context.payload.label.name;
+
+    if (labelName === "bug" || labelName === "needs-more-info") {
+      issueComment = context.issue({
+        body: "We appreciate your contribution to the project. Can you please provide more details, such as steps to reproduce the problem, and any relevant information to help us understand the issue better? This will help us in resolving the issue as soon as possible.",
+      });
+    } else if (labelName === "enhancement") {
+      issueComment = context.issue({
+        body: "We appreciate your contribution to the project. Can you please provide more details, such as the use case for the enhancement, and any relevant information to help us understand the issue better? This will help us in resolving the issue as soon as possible.",
+      });
+    } else {
+      return;
+    }
+
+    return context.octokit.issues.createComment(issueComment);
+  });
+
   // On adding app to the account
   app.on("installation.created", async (context) => {
     const owner = context.payload.installation.account.login;
 
     for (const repo of context.payload.repositories) {
       const repoName = repo.name;
+
+      axios.post(SLACK_WEBHOOK_URL, {
+        text: `New installation created by ${owner} in ${repoName}`,
+      });
 
       pass();
     }
@@ -26,6 +149,10 @@ module.exports = (app) => {
     for (const repo of context.payload.repositories_added) {
       const repoName = repo.name;
 
+      axios.post(SLACK_WEBHOOK_URL, {
+        text: `New repository added by ${owner} in ${repoName}`,
+      });
+
       pass();
     }
   });
@@ -35,75 +162,15 @@ module.exports = (app) => {
     const owner = context.payload.repository.owner.login;
     const repoName = context.payload.repository.name;
 
+    axios.post(SLACK_WEBHOOK_URL, {
+      text: `New repository created by ${owner} in ${repoName}`,
+    });
+
     pass();
   });
 
   // on commiting to the master branch
   app.on("push", async (context) => {
-    const owner = context.payload.repository.owner.login;
-    const repoName = context.payload.repository.name;
-
     pass();
   });
 };
-
-// /**
-//  * Checks for a DOI in the README.md file of a repository
-//  * @param {import('probot').Context} context
-//  * @param {String} owner
-//  * @param {String} repoName
-//  * @returns
-//  */
-// const checkForDOI = async (context, owner, repoName) => {
-//   try {
-//     // Get the README
-//     const readme = await context.octokit.rest.repos.getReadme({
-//       owner,
-//       repoName,
-//     });
-
-//     // Get the decoded content
-//     const readmeContent = Buffer.from(readme.data.content, "base64").toString();
-
-//     // Check if a doi is present in the readme
-//     const doiRegex = /10.\d{4,9}\/[-._;()/:A-Z0-9]+/i;
-//     const doi = doiRegex.exec(readmeContent);
-
-//     /**
-//      * !TODO: Check if the doi is valid
-//      * Potentially use the crossref api or resolve the DOI manually
-//      */
-
-//     if (doi) {
-//       console.log("DOI found");
-//     } else {
-//       // throw an error to trigger the catch block
-//       throw new Error("DOI not found");
-//     }
-//   } catch (error) {
-//     console.log("Opening issue...");
-
-//     // Check if the issue already exists
-//     const issue = await context.octokit.rest.issues.listForRepo({
-//       owner,
-//       repo: repoName,
-//       state: "open",
-//       creator: "doi-check-app[bot]",
-//     });
-
-//     // If the issue already exists, return
-//     if (issue.data.length > 0) {
-//       console.log("Issue already exists");
-//       return;
-//     }
-
-//     const repoIssue = await context.octokit.rest.issues.create({
-//       owner,
-//       repo: repoName,
-//       title: "Could not find a DOI in the README",
-//       body: ISSUE_MESSAGE,
-//     });
-
-//     return repoIssue;
-//   }
-// };
