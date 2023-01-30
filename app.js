@@ -17,7 +17,7 @@ module.exports = (app) => {
   // On opening a new issue
   app.on("issues.opened", async (context) => {
     const issueComment = context.issue({
-      body: "Thanks for opening this issue! Someone from the team will be providing you with feedback shortly.",
+      body: "Hello! Thank you for opening this issue. Your input is valuable and helps improve the project. Can you please provide a detailed description of the problem you're encountering? Any additional information such as steps to reproduce the issue would be greatly appreciated. Thank you!",
     });
 
     axios.post(SLACK_WEBHOOK_URL, {
@@ -30,7 +30,7 @@ module.exports = (app) => {
   // On closing an issue
   app.on("issues.closed", async (context) => {
     const issueComment = context.issue({
-      body: "Thanks for closing this issue! If you have any further questions, please feel free to open a new issue. We are always happy to help!",
+      body: "Thank you for bringing this issue to our attention. After a thorough investigation, we have determined that this issue has been resolved. If you're still experiencing any problems, please don't hesitate to open a new issue. Have a great day!",
     });
 
     return context.octokit.issues.createComment(issueComment);
@@ -39,7 +39,7 @@ module.exports = (app) => {
   // On opening a new pull request
   app.on("pull_request.opened", async (context) => {
     const issueComment = context.issue({
-      body: "Thanks for opening this pull request! Someone from the team will be providing you with feedback shortly.",
+      body: "Thank you for submitting this pull request! We appreciate your contribution to the project. Before we can merge it, we need to review the changes you've made to ensure they align with our code standards and meet the requirements of the project. We'll get back to you as soon as we can with feedback. Thanks again!",
     });
 
     return context.octokit.issues.createComment(issueComment);
@@ -57,7 +57,7 @@ module.exports = (app) => {
   // On editing a pull request
   app.on("pull_request.edited", async (context) => {
     const issueComment = context.issue({
-      body: "Please wait for any GitHub Actions to complete before editing your pull request. Thanks for your patience!",
+      body: "Thanks for making updates to your pull request. Our team will take a look and provide feedback as soon as possible. Please wait for any GitHub Actions to complete before editing your pull request. If you have any additional questions or concerns, feel free to let us know. Thank you for your contributions!",
     });
 
     return context.octokit.issues.createComment(issueComment);
@@ -65,7 +65,7 @@ module.exports = (app) => {
 
   app.on("pull_request.ready_for_review", async (context) => {
     const issueComment = context.issue({
-      body: "Thanks for making your pull request ready for review! Someone from the team will be providing you with feedback shortly.",
+      body: "Thanks for making your pull request ready for review! Our team will take a look and provide feedback as soon as possible.",
     });
 
     axios.post(SLACK_WEBHOOK_URL, {
