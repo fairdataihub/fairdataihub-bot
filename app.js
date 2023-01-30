@@ -1,9 +1,8 @@
 "use strict";
-import { pass } from "./nothing.js";
-import * as dotenv from "dotenv";
-import axios from "axios";
 
-dotenv.config();
+const { pass } = require("./lib/nothing.js");
+const axios = require("axios");
+require("dotenv").config();
 
 const SLACK_WEBHOOK_URL = process.env.SLACK_WEBHOOK_URL;
 
