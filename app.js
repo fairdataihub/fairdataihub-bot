@@ -15,71 +15,105 @@ module.exports = (app) => {
 
   // On opening a new issue
   app.on("issues.opened", async (context) => {
+    console.log("issue opened");
+
     const issueComment = context.issue({
       body: "Hello! Thank you for opening this issue. Your input is valuable and helps improve the project. Can you please provide a detailed description of the problem you're encountering? Any additional information such as steps to reproduce the issue would be greatly appreciated. Thank you!",
     });
 
-    axios.post(SLACK_WEBHOOK_URL, {
+    console.log("sending slack message");
+    await axios.post(SLACK_WEBHOOK_URL, {
       text: `New issue opened by ${context.payload.issue.user.login} in ${context.payload.repository.full_name}`,
     });
 
+    console.log("sending issue comment");
     return context.octokit.issues.createComment(issueComment);
   });
 
   // On closing an issue
   app.on("issues.closed", async (context) => {
+    console.log("issue closed");
+
     const issueComment = context.issue({
       body: "Thank you for bringing this issue to our attention. After a thorough investigation, we have determined that this issue has been resolved. If you're still experiencing any problems, please don't hesitate to open a new issue. Have a great day!",
     });
 
+    console.log("sending issue comment");
     return context.octokit.issues.createComment(issueComment);
   });
 
   // On opening a new pull request
   app.on("pull_request.opened", async (context) => {
+    console.log("pull request opened");
+
+    // Get the pull request number
+    const prNumber = context.payload.pull_request.number;
+
     const issueComment = context.issue({
       body: "Thank you for submitting this pull request! We appreciate your contribution to the project. Before we can merge it, we need to review the changes you've made to ensure they align with our code standards and meet the requirements of the project. We'll get back to you as soon as we can with feedback. Thanks again!",
+      issue_number: prNumber,
     });
 
+    console.log("sending pr comment");
     return context.octokit.issues.createComment(issueComment);
   });
 
   // On closing a pull request
   app.on("pull_request.closed", async (context) => {
+    console.log("pull request closed");
+
+    // Get the pull request number
+    const prNumber = context.payload.pull_request.number;
+
     const issueComment = context.issue({
       body: "Thanks for closing this pull request! If you have any further questions, please feel free to open a new issue. We are always happy to help!",
+      issue_number: prNumber,
     });
 
+    console.log("sending pr comment");
     return context.octokit.issues.createComment(issueComment);
   });
 
   // On editing a pull request
   app.on("pull_request.edited", async (context) => {
+    console.log("pull request edited");
+
+    // Get the pull request number
+    const prNumber = context.payload.pull_request.number;
+
     const issueComment = context.issue({
       body: "Thanks for making updates to your pull request. Our team will take a look and provide feedback as soon as possible. Please wait for any GitHub Actions to complete before editing your pull request. If you have any additional questions or concerns, feel free to let us know. Thank you for your contributions!",
+      issue_number: prNumber,
     });
 
+    console.log("sending pr comment");
     return context.octokit.issues.createComment(issueComment);
   });
 
   app.on("pull_request.ready_for_review", async (context) => {
+    console.log("pull request ready for review");
+
+    // Get the pull request number
+    const prNumber = context.payload.pull_request.number;
+
     const issueComment = context.issue({
       body: "Thanks for making your pull request ready for review! Our team will take a look and provide feedback as soon as possible.",
+      issue_number: prNumber,
     });
 
-    axios.post(SLACK_WEBHOOK_URL, {
+    await axios.post(SLACK_WEBHOOK_URL, {
       text: `New pull request opened by ${context.payload.pull_request.user.login} in ${context.payload.repository.full_name}`,
     });
 
+    console.log("sending pr comment");
     return context.octokit.issues.createComment(issueComment);
   });
 
   // On repo being starred
   app.on("star.created", async (context) => {
-    const owner = context.payload.repository.owner.login;
-    const repoName = context.payload.repository.name;
+    console.log("repo starred");
 
-    axios.post(SLACK_WEBHOOK_URL, {
+    await axios.post(SLACK_WEBHOOK_URL, {
       text: `New star created by ${context.payload.sender.login} in ${context.payload.repository.full_name}`,
     });
 
@@ -88,7 +122,9 @@ module.exports = (app) => {
 
   // On repo being unstarred
   app.on("star.deleted", async (context) => {
-    axios.post(SLACK_WEBHOOK_URL, {
+    console.log("repo unstarred");
+
+    await axios.post(SLACK_WEBHOOK_URL, {
       text: `Star deleted by ${context.payload.sender.login} in ${context.payload.repository.full_name}`,
     });
 
@@ -97,7 +133,9 @@ module.exports = (app) => {
 
   // On creating a new fork
   app.on("fork", async (context) => {
-    axios.post(SLACK_WEBHOOK_URL, {
+    console.log("repo forked");
+
+    await axios.post(SLACK_WEBHOOK_URL, {
       text: `New fork created by ${context.payload.forkee.owner.login} of ${context.payload.repository.full_name}`,
     });
 
@@ -106,6 +144,8 @@ module.exports = (app) => {
 
   // On adding a label to an issue
   app.on("label.created", async (context) => {
+    console.log("label added");
+
     let issueComment = "";
 
     // Get the label name
@@ -123,17 +163,20 @@ module.exports = (app) => {
       return;
     }
 
+    console.log("sending issue comment");
     return context.octokit.issues.createComment(issueComment);
   });
 
   // On adding app to the account
   app.on("installation.created", async (context) => {
+    console.log("app installed");
+
     const owner = context.payload.installation.account.login;
 
     for (const repo of context.payload.repositories) {
       const repoName = repo.name;
 
-      axios.post(SLACK_WEBHOOK_URL, {
+      await axios.post(SLACK_WEBHOOK_URL, {
         text: `New installation created by ${owner} in ${repoName}`,
       });
 
@@ -143,12 +186,14 @@ module.exports = (app) => {
 
   // On adding adding a repository to the app
   app.on("installation_repositories.added", async (context) => {
+    console.log("repo added");
+
     const owner = context.payload.installation.account.login;
 
     for (const repo of context.payload.repositories_added) {
       const repoName = repo.name;
 
-      axios.post(SLACK_WEBHOOK_URL, {
+      await axios.post(SLACK_WEBHOOK_URL, {
         text: `New repository added by ${owner} in ${repoName}`,
       });
 
@@ -158,10 +203,12 @@ module.exports = (app) => {
 
   // on creating a new repository
   app.on("repository.created", async (context) => {
+    console.log("repo created");
+
     const owner = context.payload.repository.owner.login;
     const repoName = context.payload.repository.name;
 
-    axios.post(SLACK_WEBHOOK_URL, {
+    await axios.post(SLACK_WEBHOOK_URL, {
       text: `New repository created by ${owner} in ${repoName}`,
     });
 
