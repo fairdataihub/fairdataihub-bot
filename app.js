@@ -1,6 +1,6 @@
 "use strict";
 
-const short = require("short-uuid");
+const { Octokit } = require("@octokit/rest");
 const axios = require("axios");
 require("dotenv").config();
 
@@ -13,7 +13,10 @@ const SLACK_WEBHOOK_URL = process.env.SLACK_WEBHOOK_URL;
 module.exports = (app) => {
   app.log.info("Yay, the app was loaded!");
 
-  // On opening a new issue
+  /**
+   * On an issue being opened
+   * @param {import('probot').Context} context
+   */
   app.on("issues.opened", async (context) => {
     console.log("issue opened");
 
@@ -62,7 +65,10 @@ module.exports = (app) => {
     return context.octokit.issues.createComment(issueComment);
   });
 
-  // On closing an issue
+  /**
+   * On an issue being closed
+   * @param {import('probot').Context} context
+   */
   app.on("issues.closed", async (context) => {
     console.log("issue closed");
 
@@ -81,7 +87,10 @@ module.exports = (app) => {
     return context.octokit.issues.createComment(issueComment);
   });
 
-  // On opening a new pull request
+  /**
+   * On a pull request being opened
+   * @param {import('probot').Context} context
+   */
   app.on("pull_request.opened", async (context) => {
     console.log("pull request opened");
 
@@ -104,7 +113,10 @@ module.exports = (app) => {
     return context.octokit.issues.createComment(issueComment);
   });
 
-  // On closing a pull request
+  /**
+   * On a pull request being closed/merged
+   * @param {import('probot').Context} context
+   */
   app.on("pull_request.closed", async (context) => {
     console.log("pull request closed");
 
@@ -127,7 +139,10 @@ module.exports = (app) => {
     return context.octokit.issues.createComment(issueComment);
   });
 
-  // On editing a pull request
+  /**
+   * On a pull request being edited
+   * @param {import('probot').Context} context
+   */
   app.on("pull_request.edited", async (context) => {
     console.log("pull request edited");
 
@@ -150,6 +165,10 @@ module.exports = (app) => {
     return context.octokit.issues.createComment(issueComment);
   });
 
+  /**
+   * On a pull request being marked as ready for review
+   * @param {import('probot').Context} context
+   */
   app.on("pull_request.ready_for_review", async (context) => {
     console.log("pull request ready for review");
 
@@ -172,7 +191,10 @@ module.exports = (app) => {
     return context.octokit.issues.createComment(issueComment);
   });
 
-  // On repo being starred
+  /**
+   * On a new star being added to a repository
+   * @param {import('probot').Context} context
+   */
   app.on("star.created", async (context) => {
     console.log("repo starred");
 
@@ -207,7 +229,10 @@ module.exports = (app) => {
     return;
   });
 
-  // On repo being unstarred
+  /**
+   * On repository being unstarred
+   * @param {import('probot').Context} context
+   */
   app.on("star.deleted", async (context) => {
     console.log("repo unstarred");
 
@@ -241,7 +266,10 @@ module.exports = (app) => {
     return;
   });
 
-  // On creating a new fork
+  /**
+   * On repository being forked
+   * @param {import('probot').Context} context
+   */
   app.on("fork", async (context) => {
     console.log("repo forked");
 
@@ -268,6 +296,10 @@ module.exports = (app) => {
     return;
   });
 
+  /**
+   * On a release being published
+   * @param {import('probot').Context} context
+   */
   app.on("release.published", async (context) => {
     console.log("release published");
 
@@ -281,17 +313,12 @@ module.exports = (app) => {
     // Get the release
     const release = context.payload.release;
 
-    const reactions = ["+1", "heart", "hooray", "rocket"];
+    // Get repo owner and name
+    const owner = context.payload.repository.owner.login;
+    const repo = context.payload.repository.name;
 
-    for (const reaction of reactions) {
-      // Add a reaction to the release
-      await context.octokit.reactions.createForRelease({
-        owner: context.payload.repository.owner.login,
-        repo: context.payload.repository.name,
-        release_id: release.id,
-        content: reaction,
-      });
-    }
+    // Add reactions to the release
+    await addReactionsToRelease(owner, repo, release.id);
 
     await axios.post(SLACK_WEBHOOK_URL, {
       blocks: [
@@ -316,7 +343,10 @@ module.exports = (app) => {
     return;
   });
 
-  // On adding a label to an issue
+  /**
+   * On a label being added to an issue
+   * @param {import('probot').Context} context
+   */
   app.on("label.created", async (context) => {
     console.log("label added");
 
@@ -341,27 +371,28 @@ module.exports = (app) => {
     return context.octokit.issues.createComment(issueComment);
   });
 
-  // On adding app to the account
+  /**
+   * On adding the GitHub App to an organization
+   * @param {import('probot').Context} context
+   */
   app.on("installation.created", async (context) => {
     console.log("app installed");
 
     const owner = context.payload.installation.account.login;
 
+    // Check if the repo is in the fairdataihub or misanlab org
+    if (owner !== "fairdataihub" && owner !== "misanlab") {
+      return;
+    }
+
     for (const repo of context.payload.repositories) {
       const repoName = repo.name;
 
-      // Check if the repo is in the fairdataihub or misanlab org
-      if (owner !== "fairdataihub" && owner !== "misanlab") {
-        continue;
-      }
-
-      // Check if the repo is a fork
-      if (repo.fork) {
-        continue;
-      }
-
       // Star the repo
-      await context.octokit.activity.starRepo({
+      await starRepository(owner, repoName);
+
+      // Get the repo's releases
+      const releases = await context.octokit.repos.listReleases({
         owner: owner,
         repo: repoName,
       });
@@ -373,17 +404,7 @@ module.exports = (app) => {
           continue;
         }
 
-        const reactions = ["+1", "heart", "hooray", "rocket"];
-
-        for (const reaction of reactions) {
-          // Add a reaction to the release
-          await context.octokit.reactions.createForRelease({
-            owner: owner,
-            repo: repoName,
-            release_id: release.id,
-            content: reaction,
-          });
-        }
+        await addReactionsToRelease(owner, repoName, release.id);
       }
 
       // Send a slack message
@@ -406,12 +427,15 @@ module.exports = (app) => {
           },
         ],
       });
-
-      return;
     }
+
+    return;
   });
 
-  // On adding adding a repository to the app
+  /**
+   * On adding a repository to the app
+   * @param {import('probot').Context} context
+   */
   app.on("installation_repositories.added", async (context) => {
     console.log("repo added");
 
@@ -431,10 +455,7 @@ module.exports = (app) => {
       }
 
       // Star the repo
-      await context.octokit.activity.starRepo({
-        owner: owner,
-        repo: repoName,
-      });
+      await starRepository(owner, repoName);
 
       // Get the repo's releases
       const releases = await context.octokit.repos.listReleases({
@@ -449,17 +470,7 @@ module.exports = (app) => {
           continue;
         }
 
-        const reactions = ["+1", "heart", "hooray", "rocket"];
-
-        for (const reaction of reactions) {
-          // Add a reaction to the release
-          await context.octokit.reactions.createForRelease({
-            owner: owner,
-            repo: repoName,
-            release_id: release.id,
-            content: reaction,
-          });
-        }
+        await addReactionsToRelease(owner, repoName, release.id);
       }
 
       await axios.post(SLACK_WEBHOOK_URL, {
@@ -481,12 +492,15 @@ module.exports = (app) => {
           },
         ],
       });
-
-      return;
     }
+
+    return;
   });
 
-  // on creating a new repository
+  /**
+   * On creating a repository
+   * @param {import('probot').Context} context
+   */
   app.on("repository.created", async (context) => {
     console.log("repo created");
 
@@ -509,6 +523,12 @@ module.exports = (app) => {
       repo: repoName,
     });
 
+    // Get the repo's releases
+    const releases = await context.octokit.repos.listReleases({
+      owner: owner,
+      repo: repoName,
+    });
+
     // loop through the releases
     for (const release of releases.data) {
       // Check if the release is a draft
@@ -516,17 +536,7 @@ module.exports = (app) => {
         continue;
       }
 
-      const reactions = ["+1", "heart", "hooray", "rocket"];
-
-      for (const reaction of reactions) {
-        // Add a reaction to the release
-        await context.octokit.reactions.createForRelease({
-          owner: owner,
-          repo: repoName,
-          release_id: release.id,
-          content: reaction,
-        });
-      }
+      await addReactionsToRelease(owner, repoName, release.id);
     }
 
     await axios.post(SLACK_WEBHOOK_URL, {
@@ -552,8 +562,56 @@ module.exports = (app) => {
     return;
   });
 
-  // on commiting to the master branch
+  /**
+   * On push to master
+   * @param {import("probot").Context} context
+   */
   app.on("push", async (context) => {
     console.log("push to master");
   });
+};
+
+/**
+ * Star a repository using an authenticated user
+ * @param {string} owner
+ * @param {string} repo
+ * @returns
+ */
+const starRepository = async (owner, repo) => {
+  const octokit = new Octokit({
+    auth: process.env.GITHUB_PAT,
+  });
+
+  await octokit.activity.starRepoForAuthenticatedUser({
+    owner,
+    repo,
+  });
+
+  return;
+};
+
+/**
+ * Add reactions to a release using an authenticated user
+ * @param {string} owner
+ * @param {string} repo
+ * @param {string} releaseId
+ * @returns {Promise<void>}
+ */
+const addReactionsToRelease = async (owner, repo, releaseId) => {
+  const octokit = new Octokit({
+    auth: process.env.GITHUB_PAT,
+  });
+
+  const reactions = ["+1", "heart", "hooray", "rocket"];
+
+  for (const reaction of reactions) {
+    await octokit.reactions.createForRelease({
+      owner,
+      repo,
+      release_id: releaseId,
+      content: reaction,
+    });
+  }
+
+  return;
 };

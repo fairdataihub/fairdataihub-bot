@@ -16,10 +16,10 @@
     "test": "jest"
   },
   "dependencies": {
+    "@octokit/rest": "^19.0.7",
     "axios": "^1.2.6",
     "dotenv": "^16.0.3",
-    "probot": "^12.2.4",
-    "short-uuid": "^4.2.2"
+    "probot": "^12.2.4"
   },
   "devDependencies": {
     "@fairdataihub/config": "^2.2.1",
