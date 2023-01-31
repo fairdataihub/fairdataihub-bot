@@ -379,6 +379,7 @@ module.exports = (app) => {
     console.log("app installed");
 
     const owner = context.payload.installation.account.login;
+    console.log("owner: ", owner);
 
     // Check if the repo is in the fairdataihub or misanlab org
     if (owner !== "fairdataihub" && owner !== "misanlab") {
