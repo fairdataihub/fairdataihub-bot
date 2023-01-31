@@ -18,8 +18,8 @@ module.exports = (app) => {
     console.log("issue opened");
 
     if (
-      context.payload.owner.login !== "fairdataihub" &&
-      context.payload.owner.login !== "misanlab"
+      context.payload.repository.owner.login !== "fairdataihub" &&
+      context.payload.repository.owner.login !== "misanlab"
     ) {
       return;
     }
@@ -42,8 +42,8 @@ module.exports = (app) => {
     console.log("issue closed");
 
     if (
-      context.payload.owner.login !== "fairdataihub" &&
-      context.payload.owner.login !== "misanlab"
+      context.payload.repository.owner.login !== "fairdataihub" &&
+      context.payload.repository.owner.login !== "misanlab"
     ) {
       return;
     }
@@ -61,8 +61,8 @@ module.exports = (app) => {
     console.log("pull request opened");
 
     if (
-      context.payload.owner.login !== "fairdataihub" &&
-      context.payload.owner.login !== "misanlab"
+      context.payload.repository.owner.login !== "fairdataihub" &&
+      context.payload.repository.owner.login !== "misanlab"
     ) {
       return;
     }
@@ -84,8 +84,8 @@ module.exports = (app) => {
     console.log("pull request closed");
 
     if (
-      context.payload.owner.login !== "fairdataihub" &&
-      context.payload.owner.login !== "misanlab"
+      context.payload.repository.owner.login !== "fairdataihub" &&
+      context.payload.repository.owner.login !== "misanlab"
     ) {
       return;
     }
@@ -107,8 +107,8 @@ module.exports = (app) => {
     console.log("pull request edited");
 
     if (
-      context.payload.owner.login !== "fairdataihub" &&
-      context.payload.owner.login !== "misanlab"
+      context.payload.repository.owner.login !== "fairdataihub" &&
+      context.payload.repository.owner.login !== "misanlab"
     ) {
       return;
     }
@@ -129,8 +129,8 @@ module.exports = (app) => {
     console.log("pull request ready for review");
 
     if (
-      context.payload.owner.login !== "fairdataihub" &&
-      context.payload.owner.login !== "misanlab"
+      context.payload.repository.owner.login !== "fairdataihub" &&
+      context.payload.repository.owner.login !== "misanlab"
     ) {
       return;
     }
@@ -152,8 +152,8 @@ module.exports = (app) => {
     console.log("repo starred");
 
     if (
-      context.payload.owner.login !== "fairdataihub" &&
-      context.payload.owner.login !== "misanlab"
+      context.payload.repository.owner.login !== "fairdataihub" &&
+      context.payload.repository.owner.login !== "misanlab"
     ) {
       console.log("repo not fairdataihub or misanlab");
       return;
@@ -168,7 +168,7 @@ module.exports = (app) => {
           type: "section",
           text: {
             type: "mrkdwn",
-            text: `New star created! :star: \n The <${context.payload.repository.html_url}|${context.payload.repository.name}> repository in the <${context.payload.owner.html_url}|${context.payload.owner.login}> organization was just starred by <${context.payload.sender.html_url}|${context.payload.sender.login}>! :tada: `,
+            text: `New star created! :star: \n The <${context.payload.repository.html_url}|${context.payload.repository.name}> repository in the <${context.payload.repository.owner.html_url}|${context.payload.repository.owner.login}> organization was just starred by <${context.payload.sender.html_url}|${context.payload.sender.login}>! :tada: `,
           },
           accessory: {
             type: "image",
@@ -187,11 +187,11 @@ module.exports = (app) => {
 
   // On repo being unstarred
   app.on("star.deleted", async (context) => {
-    console.log("repo unstarred", context.payload.repository.name);
+    console.log("repo unstarred");
 
     if (
-      context.payload.owner.login !== "fairdataihub" &&
-      context.payload.owner.login !== "misanlab"
+      context.payload.repository.owner.login !== "fairdataihub" &&
+      context.payload.repository.owner.login !== "misanlab"
     ) {
       return;
     }
@@ -205,7 +205,7 @@ module.exports = (app) => {
           type: "section",
           text: {
             type: "mrkdwn",
-            text: `Star removed! :star: \n The <${context.payload.repository.html_url}|${context.payload.repository.name}> repository in the <${context.payload.owner.html_url}|${context.payload.owner.login}> organization lost a star from <${context.payload.sender.html_url}|${context.payload.sender.login}>! :cry: `,
+            text: `Star removed! :star: \n The <${context.payload.repository.html_url}|${context.payload.repository.name}> repository in the <${context.payload.repository.owner.html_url}|${context.payload.repository.owner.login}> organization lost a star from <${context.payload.sender.html_url}|${context.payload.sender.login}>! :cry: `,
           },
           accessory: {
             type: "image",
