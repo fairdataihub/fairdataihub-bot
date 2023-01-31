@@ -268,6 +268,54 @@ module.exports = (app) => {
     return;
   });
 
+  app.on("release.published", async (context) => {
+    console.log("release published");
+
+    if (
+      context.payload.repository.owner.login !== "fairdataihub" &&
+      context.payload.repository.owner.login !== "misanlab"
+    ) {
+      return;
+    }
+
+    // Get the release
+    const release = context.payload.release;
+
+    const reactions = ["+1", "heart", "hooray", "rocket"];
+
+    for (const reaction of reactions) {
+      // Add a reaction to the release
+      await context.octokit.reactions.createForRelease({
+        owner: context.payload.repository.owner.login,
+        repo: context.payload.repository.name,
+        release_id: release.id,
+        content: reaction,
+      });
+    }
+
+    await axios.post(SLACK_WEBHOOK_URL, {
+      blocks: [
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: `New release published! :rocket: \n The <${context.payload.repository.html_url}|${context.payload.repository.name}> repository in the <${context.payload.repository.owner.html_url}|${context.payload.repository.owner.login}> organization just published a new release! :tada: `,
+          },
+          accessory: {
+            type: "image",
+            image_url: `https://api.dicebear.com/5.x/avataaars/png?seed=${context.id}`,
+            alt_text: "image",
+          },
+        },
+        {
+          type: "divider",
+        },
+      ],
+    });
+
+    return;
+  });
+
   // On adding a label to an issue
   app.on("label.created", async (context) => {
     console.log("label added");
@@ -302,6 +350,43 @@ module.exports = (app) => {
     for (const repo of context.payload.repositories) {
       const repoName = repo.name;
 
+      // Check if the repo is in the fairdataihub or misanlab org
+      if (owner !== "fairdataihub" && owner !== "misanlab") {
+        continue;
+      }
+
+      // Check if the repo is a fork
+      if (repo.fork) {
+        continue;
+      }
+
+      // Star the repo
+      await context.octokit.activity.starRepo({
+        owner: owner,
+        repo: repoName,
+      });
+
+      // loop through the releases
+      for (const release of releases.data) {
+        // Check if the release is a draft
+        if (release.draft) {
+          continue;
+        }
+
+        const reactions = ["+1", "heart", "hooray", "rocket"];
+
+        for (const reaction of reactions) {
+          // Add a reaction to the release
+          await context.octokit.reactions.createForRelease({
+            owner: owner,
+            repo: repoName,
+            release_id: release.id,
+            content: reaction,
+          });
+        }
+      }
+
+      // Send a slack message
       await axios.post(SLACK_WEBHOOK_URL, {
         blocks: [
           {
@@ -312,7 +397,7 @@ module.exports = (app) => {
             },
             accessory: {
               type: "image",
-              image_url: `https://api.dicebear.com/5.x/big-smile/png?seed=${context.id}`,
+              image_url: `https://api.dicebear.com/5.x/fun-emoji/png?seed=${context.id}`,
               alt_text: "image",
             },
           },
@@ -335,6 +420,48 @@ module.exports = (app) => {
     for (const repo of context.payload.repositories_added) {
       const repoName = repo.name;
 
+      // Check if the repo is in the fairdataihub or misanlab org
+      if (owner !== "fairdataihub" && owner !== "misanlab") {
+        continue;
+      }
+
+      // Check if the repo is a fork
+      if (repo.fork) {
+        continue;
+      }
+
+      // Star the repo
+      await context.octokit.activity.starRepo({
+        owner: owner,
+        repo: repoName,
+      });
+
+      // Get the repo's releases
+      const releases = await context.octokit.repos.listReleases({
+        owner: owner,
+        repo: repoName,
+      });
+
+      // loop through the releases
+      for (const release of releases.data) {
+        // Check if the release is a draft
+        if (release.draft) {
+          continue;
+        }
+
+        const reactions = ["+1", "heart", "hooray", "rocket"];
+
+        for (const reaction of reactions) {
+          // Add a reaction to the release
+          await context.octokit.reactions.createForRelease({
+            owner: owner,
+            repo: repoName,
+            release_id: release.id,
+            content: reaction,
+          });
+        }
+      }
+
       await axios.post(SLACK_WEBHOOK_URL, {
         blocks: [
           {
@@ -345,7 +472,7 @@ module.exports = (app) => {
             },
             accessory: {
               type: "image",
-              image_url: `https://api.dicebear.com/5.x/micah/png?seed=${context.id}&mouth=frown,nervous,sad,surprised`,
+              image_url: `https://api.dicebear.com/5.x/fun-emoji/png?seed=${context.id}`,
               alt_text: "image",
             },
           },
@@ -366,6 +493,42 @@ module.exports = (app) => {
     const owner = context.payload.repository.owner.login;
     const repoName = context.payload.repository.name;
 
+    // Check if the repo is in the fairdataihub or misanlab org
+    if (owner !== "fairdataihub" && owner !== "misanlab") {
+      return;
+    }
+
+    // Check if the repo is a fork
+    if (repo.fork) {
+      return;
+    }
+
+    // Star the repo
+    await context.octokit.activity.starRepo({
+      owner: owner,
+      repo: repoName,
+    });
+
+    // loop through the releases
+    for (const release of releases.data) {
+      // Check if the release is a draft
+      if (release.draft) {
+        continue;
+      }
+
+      const reactions = ["+1", "heart", "hooray", "rocket"];
+
+      for (const reaction of reactions) {
+        // Add a reaction to the release
+        await context.octokit.reactions.createForRelease({
+          owner: owner,
+          repo: repoName,
+          release_id: release.id,
+          content: reaction,
+        });
+      }
+    }
+
     await axios.post(SLACK_WEBHOOK_URL, {
       blocks: [
         {
@@ -376,7 +539,7 @@ module.exports = (app) => {
           },
           accessory: {
             type: "image",
-            image_url: `https://api.dicebear.com/5.x/micah/png?seed=${context.id}&mouth=frown,nervous,sad,surprised`,
+            image_url: `https://api.dicebear.com/5.x/fun-emoji/png?seed=${context.id}`,
             alt_text: "image",
           },
         },
