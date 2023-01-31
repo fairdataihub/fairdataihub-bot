@@ -16,6 +16,12 @@ module.exports = (app) => {
   app.on("issues.opened", async (context) => {
     console.log("issue opened");
 
+    const repoName = context.payload.repository.full_name.split("/");
+
+    if (repoName[0] !== "fairdataihub" && repoName[0] !== "misanlab") {
+      return;
+    }
+
     const issueComment = context.issue({
       body: "Hello! Thank you for opening this issue. Your input is valuable and helps improve the project. Can you please provide a detailed description of the problem you're encountering? Any additional information such as steps to reproduce the issue would be greatly appreciated. Thank you!",
     });
@@ -33,8 +39,14 @@ module.exports = (app) => {
   app.on("issues.closed", async (context) => {
     console.log("issue closed");
 
+    const repoName = context.payload.repository.full_name.split("/");
+
+    if (repoName[0] !== "fairdataihub" && repoName[0] !== "misanlab") {
+      return;
+    }
+
     const issueComment = context.issue({
-      body: "Thank you for bringing this issue to our attention. After a thorough investigation, we have determined that this issue has been resolved. If you're still experiencing any problems, please don't hesitate to open a new issue. Have a great day!",
+      body: "If you're still experiencing any problems, please don't hesitate to open a new issue. Have a great day!",
     });
 
     console.log("sending issue comment");
@@ -44,6 +56,12 @@ module.exports = (app) => {
   // On opening a new pull request
   app.on("pull_request.opened", async (context) => {
     console.log("pull request opened");
+
+    const repoName = context.payload.repository.full_name.split("/");
+
+    if (repoName[0] !== "fairdataihub" && repoName[0] !== "misanlab") {
+      return;
+    }
 
     // Get the pull request number
     const prNumber = context.payload.pull_request.number;
@@ -61,6 +79,12 @@ module.exports = (app) => {
   app.on("pull_request.closed", async (context) => {
     console.log("pull request closed");
 
+    const repoName = context.payload.repository.full_name.split("/");
+
+    if (repoName[0] !== "fairdataihub" && repoName[0] !== "misanlab") {
+      return;
+    }
+
     // Get the pull request number
     const prNumber = context.payload.pull_request.number;
 
@@ -77,6 +101,12 @@ module.exports = (app) => {
   app.on("pull_request.edited", async (context) => {
     console.log("pull request edited");
 
+    const repoName = context.payload.repository.full_name.split("/");
+
+    if (repoName[0] !== "fairdataihub" && repoName[0] !== "misanlab") {
+      return;
+    }
+
     // Get the pull request number
     const prNumber = context.payload.pull_request.number;
 
@@ -92,16 +122,18 @@ module.exports = (app) => {
   app.on("pull_request.ready_for_review", async (context) => {
     console.log("pull request ready for review");
 
+    const repoName = context.payload.repository.full_name.split("/");
+
+    if (repoName[0] !== "fairdataihub" && repoName[0] !== "misanlab") {
+      return;
+    }
+
     // Get the pull request number
     const prNumber = context.payload.pull_request.number;
 
     const issueComment = context.issue({
       body: "Thanks for making your pull request ready for review! Our team will take a look and provide feedback as soon as possible.",
       issue_number: prNumber,
-    });
-
-    await axios.post(SLACK_WEBHOOK_URL, {
-      text: `New pull request opened by ${context.payload.pull_request.user.login} in ${context.payload.repository.full_name}`,
     });
 
     console.log("sending pr comment");
@@ -111,6 +143,12 @@ module.exports = (app) => {
   // On repo being starred
   app.on("star.created", async (context) => {
     console.log("repo starred");
+
+    const repoName = context.payload.repository.full_name.split("/");
+
+    if (repoName[0] !== "fairdataihub" && repoName[0] !== "misanlab") {
+      return;
+    }
 
     await axios.post(SLACK_WEBHOOK_URL, {
       text: `New star created by ${context.payload.sender.login} in ${context.payload.repository.full_name}`,
@@ -122,6 +160,12 @@ module.exports = (app) => {
   // On repo being unstarred
   app.on("star.deleted", async (context) => {
     console.log("repo unstarred");
+
+    const repoName = context.payload.repository.full_name.split("/");
+
+    if (repoName[0] !== "fairdataihub" && repoName[0] !== "misanlab") {
+      return;
+    }
 
     await axios.post(SLACK_WEBHOOK_URL, {
       text: `Star deleted by ${context.payload.sender.login} in ${context.payload.repository.full_name}`,
