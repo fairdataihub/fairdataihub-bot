@@ -303,7 +303,7 @@ module.exports = (app) => {
           },
           accessory: {
             type: "image",
-            image_url: `https://api.dicebear.com/5.x/avataaars/png?seed=${context.id}`,
+            image_url: `https://api.dicebear.com/5.x/big-smile/png?seed=${context.id}`,
             alt_text: "image",
           },
         },
