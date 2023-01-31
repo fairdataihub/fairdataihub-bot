@@ -1,6 +1,5 @@
 "use strict";
 
-const { pass } = require("./lib/nothing.js");
 const axios = require("axios");
 require("dotenv").config();
 
@@ -180,7 +179,7 @@ module.exports = (app) => {
         text: `New installation created by ${owner} in ${repoName}`,
       });
 
-      pass();
+      return;
     }
   });
 
@@ -197,7 +196,7 @@ module.exports = (app) => {
         text: `New repository added by ${owner} in ${repoName}`,
       });
 
-      pass();
+      return;
     }
   });
 
@@ -212,11 +211,11 @@ module.exports = (app) => {
       text: `New repository created by ${owner} in ${repoName}`,
     });
 
-    pass();
+    return;
   });
 
   // on commiting to the master branch
   app.on("push", async (context) => {
-    pass();
+    console.log("push to master");
   });
 };
