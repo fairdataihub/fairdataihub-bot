@@ -17,9 +17,10 @@ module.exports = (app) => {
   app.on("issues.opened", async (context) => {
     console.log("issue opened");
 
-    const repoName = context.payload.repository.full_name.split("/");
-
-    if (repoName[0] !== "fairdataihub" && repoName[0] !== "misanlab") {
+    if (
+      context.payload.repository.name !== "fairdataihub" &&
+      context.payload.repository.name !== "misanlab"
+    ) {
       return;
     }
 
@@ -40,9 +41,10 @@ module.exports = (app) => {
   app.on("issues.closed", async (context) => {
     console.log("issue closed");
 
-    const repoName = context.payload.repository.full_name.split("/");
-
-    if (repoName[0] !== "fairdataihub" && repoName[0] !== "misanlab") {
+    if (
+      context.payload.repository.name !== "fairdataihub" &&
+      context.payload.repository.name !== "misanlab"
+    ) {
       return;
     }
 
@@ -58,9 +60,10 @@ module.exports = (app) => {
   app.on("pull_request.opened", async (context) => {
     console.log("pull request opened");
 
-    const repoName = context.payload.repository.full_name.split("/");
-
-    if (repoName[0] !== "fairdataihub" && repoName[0] !== "misanlab") {
+    if (
+      context.payload.repository.name !== "fairdataihub" &&
+      context.payload.repository.name !== "misanlab"
+    ) {
       return;
     }
 
@@ -80,9 +83,10 @@ module.exports = (app) => {
   app.on("pull_request.closed", async (context) => {
     console.log("pull request closed");
 
-    const repoName = context.payload.repository.full_name.split("/");
-
-    if (repoName[0] !== "fairdataihub" && repoName[0] !== "misanlab") {
+    if (
+      context.payload.repository.name !== "fairdataihub" &&
+      context.payload.repository.name !== "misanlab"
+    ) {
       return;
     }
 
@@ -102,9 +106,10 @@ module.exports = (app) => {
   app.on("pull_request.edited", async (context) => {
     console.log("pull request edited");
 
-    const repoName = context.payload.repository.full_name.split("/");
-
-    if (repoName[0] !== "fairdataihub" && repoName[0] !== "misanlab") {
+    if (
+      context.payload.repository.name !== "fairdataihub" &&
+      context.payload.repository.name !== "misanlab"
+    ) {
       return;
     }
 
@@ -123,9 +128,10 @@ module.exports = (app) => {
   app.on("pull_request.ready_for_review", async (context) => {
     console.log("pull request ready for review");
 
-    const repoName = context.payload.repository.full_name.split("/");
-
-    if (repoName[0] !== "fairdataihub" && repoName[0] !== "misanlab") {
+    if (
+      context.payload.repository.name !== "fairdataihub" &&
+      context.payload.repository.name !== "misanlab"
+    ) {
       return;
     }
 
@@ -145,13 +151,14 @@ module.exports = (app) => {
   app.on("star.created", async (context) => {
     console.log("repo starred");
 
-    const repoName = context.payload.repository.full_name.split("/");
-
-    if (repoName[0] !== "fairdataihub" && repoName[0] !== "misanlab") {
+    if (
+      context.payload.repository.name !== "fairdataihub" &&
+      context.payload.repository.name !== "misanlab"
+    ) {
       return;
     }
 
-    const image_url = `https://api.dicebear.com/5.x/thumbs/svg?seed=${short.generate()}`;
+    const image_url = `https://api.dicebear.com/5.x/thumbs/svg?seed=${Math.random()}`;
     console.log(image_url);
 
     await axios.post(SLACK_WEBHOOK_URL, {
@@ -160,7 +167,7 @@ module.exports = (app) => {
           type: "section",
           text: {
             type: "mrkdwn",
-            text: `New star created! :star: \n The ${repoName[0]} repository in the ${repoName[1]} organization was just starred by ${context.payload.sender.login}! :tada: `,
+            text: `New star created! :star: \n The <${context.payload.repository.html_url}|${context.payload.repository.name}> repository in the <${context.payload.owner.html_url}|${context.payload.owner.login}> organization was just starred by <${context.payload.sender.html_url}|${context.payload.sender.login}>! :tada: `,
           },
           accessory: {
             type: "image",
@@ -170,42 +177,6 @@ module.exports = (app) => {
         },
         {
           type: "divider",
-        },
-        {
-          type: "section",
-          text: {
-            type: "mrkdwn",
-            text: "View the repository.",
-          },
-          accessory: {
-            type: "button",
-            text: {
-              type: "plain_text",
-              text: repoName[0],
-              emoji: true,
-            },
-            value: "click_me_123",
-            url: context.payload.repository.html_url,
-            action_id: "button-action",
-          },
-        },
-        {
-          type: "section",
-          text: {
-            type: "mrkdwn",
-            text: "View the user.",
-          },
-          accessory: {
-            type: "button",
-            text: {
-              type: "plain_text",
-              text: context.payload.sender.login,
-              emoji: true,
-            },
-            value: "click_me_123",
-            url: context.payload.sender.html_url,
-            action_id: "button-action",
-          },
         },
       ],
     });
@@ -217,13 +188,14 @@ module.exports = (app) => {
   app.on("star.deleted", async (context) => {
     console.log("repo unstarred");
 
-    const repoName = context.payload.repository.full_name.split("/");
-
-    if (repoName[0] !== "fairdataihub" && repoName[0] !== "misanlab") {
+    if (
+      context.payload.repository.name !== "fairdataihub" &&
+      context.payload.repository.name !== "misanlab"
+    ) {
       return;
     }
 
-    const image_url = `https://api.dicebear.com/5.x/micah/svg?seed=${short.generate()}&mouth=frown,nervous,sad,surprised`;
+    const image_url = `https://api.dicebear.com/5.x/micah/svg?seed=${Math.random()}&mouth=frown,nervous,sad,surprised`;
     console.log(image_url);
 
     await axios.post(SLACK_WEBHOOK_URL, {
@@ -232,7 +204,7 @@ module.exports = (app) => {
           type: "section",
           text: {
             type: "mrkdwn",
-            text: `Star removed! :star: \n The ${repoName[0]} repository in the ${repoName[1]} organization lost a star from ${context.payload.sender.login}! :cry: `,
+            text: `Star removed! :star: \n The <${context.payload.repository.html_url}|${context.payload.repository.name}> repository in the <${context.payload.owner.html_url}|${context.payload.owner.login}> organization lost a star from <${context.payload.sender.html_url}|${context.payload.sender.login}>! :cry: `,
           },
           accessory: {
             type: "image",
@@ -242,42 +214,6 @@ module.exports = (app) => {
         },
         {
           type: "divider",
-        },
-        {
-          type: "section",
-          text: {
-            type: "mrkdwn",
-            text: "View the repository.",
-          },
-          accessory: {
-            type: "button",
-            text: {
-              type: "plain_text",
-              text: repoName[0],
-              emoji: true,
-            },
-            value: "click_me_123",
-            url: context.payload.repository.html_url,
-            action_id: "button-action",
-          },
-        },
-        {
-          type: "section",
-          text: {
-            type: "mrkdwn",
-            text: "View the user.",
-          },
-          accessory: {
-            type: "button",
-            text: {
-              type: "plain_text",
-              text: context.payload.sender.login,
-              emoji: true,
-            },
-            value: "click_me_123",
-            url: context.payload.sender.html_url,
-            action_id: "button-action",
-          },
         },
       ],
     });
