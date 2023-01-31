@@ -169,7 +169,7 @@ module.exports = (app) => {
           },
           accessory: {
             type: "image",
-            image_url: `https://api.dicebear.com/5.x/thumbs/svg?seed=${context.id}`,
+            image_url: `https://api.dicebear.com/5.x/thumbs/pvg?seed=${context.id}`,
             alt_text: "image",
           },
         },
@@ -203,7 +203,7 @@ module.exports = (app) => {
           },
           accessory: {
             type: "image",
-            image_url: `https://api.dicebear.com/5.x/micah/svg?seed=${context.id}&mouth=frown,nervous,sad,surprised`,
+            image_url: `https://api.dicebear.com/5.x/micah/png?seed=${context.id}&mouth=frown,nervous,sad,surprised`,
             alt_text: "image",
           },
         },
