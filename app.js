@@ -28,9 +28,34 @@ module.exports = (app) => {
       body: "Hello! Thank you for opening this issue. Your input is valuable and helps improve the project. Can you please provide a detailed description of the problem you're encountering? Any additional information such as steps to reproduce the issue would be greatly appreciated. Thank you!",
     });
 
-    console.log("sending slack message");
     await axios.post(SLACK_WEBHOOK_URL, {
-      text: `New issue opened by ${context.payload.issue.user.login} in ${context.payload.repository.full_name}`,
+      blocks: [
+        {
+          type: "header",
+          text: {
+            type: "plain_text",
+            text: `New issue opened in ${context.payload.repository.full_name}`,
+            emoji: true,
+          },
+        },
+        {
+          type: "divider",
+        },
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: `*Issue title:* ${context.payload.issue.title}`,
+          },
+        },
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: `*Issue Link:* ${context.payload.issue.html_url}`,
+          },
+        },
+      ],
     });
 
     console.log("sending issue comment");
@@ -169,7 +194,7 @@ module.exports = (app) => {
           },
           accessory: {
             type: "image",
-            image_url: `https://api.dicebear.com/5.x/thumbs/pvg?seed=${context.id}`,
+            image_url: `https://api.dicebear.com/5.x/thumbs/png?seed=${context.id}`,
             alt_text: "image",
           },
         },
@@ -221,7 +246,23 @@ module.exports = (app) => {
     console.log("repo forked");
 
     await axios.post(SLACK_WEBHOOK_URL, {
-      text: `New fork created by ${context.payload.forkee.owner.login} of ${context.payload.repository.full_name}`,
+      blocks: [
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: `New fork created! :fork_and_knife: \n The <${context.payload.repository.html_url}|${context.payload.repository.name}> repository in the <${context.payload.repository.owner.html_url}|${context.payload.repository.owner.login}> organization was just forked by <${context.payload.forkee.owner.html_url}|${context.payload.forkee.owner.login}>! :monocle_face: `,
+          },
+          accessory: {
+            type: "image",
+            image_url: `https://api.dicebear.com/5.x/shapes/png?seed=${context.id}`,
+            alt_text: "image",
+          },
+        },
+        {
+          type: "divider",
+        },
+      ],
     });
 
     return;
@@ -262,7 +303,23 @@ module.exports = (app) => {
       const repoName = repo.name;
 
       await axios.post(SLACK_WEBHOOK_URL, {
-        text: `New installation created by ${owner} in ${repoName}`,
+        blocks: [
+          {
+            type: "section",
+            text: {
+              type: "mrkdwn",
+              text: `New installation created! :rocket: \n The app was installed to the ${repoName} repository in the <${context.payload.installation.account.html_url}|${owner}> organization! :tada:`,
+            },
+            accessory: {
+              type: "image",
+              image_url: `https://api.dicebear.com/5.x/big-smile/png?seed=${context.id}`,
+              alt_text: "image",
+            },
+          },
+          {
+            type: "divider",
+          },
+        ],
       });
 
       return;
@@ -279,7 +336,23 @@ module.exports = (app) => {
       const repoName = repo.name;
 
       await axios.post(SLACK_WEBHOOK_URL, {
-        text: `New repository added by ${owner} in ${repoName}`,
+        blocks: [
+          {
+            type: "section",
+            text: {
+              type: "mrkdwn",
+              text: `New repository added! ➕ \n The app was installed to the ${repoName} repository in the <${context.payload.installation.account.html_url}|${owner}> organization! :tada:`,
+            },
+            accessory: {
+              type: "image",
+              image_url: `https://api.dicebear.com/5.x/micah/png?seed=${context.id}&mouth=frown,nervous,sad,surprised`,
+              alt_text: "image",
+            },
+          },
+          {
+            type: "divider",
+          },
+        ],
       });
 
       return;
@@ -294,7 +367,23 @@ module.exports = (app) => {
     const repoName = context.payload.repository.name;
 
     await axios.post(SLACK_WEBHOOK_URL, {
-      text: `New repository created by ${owner} in ${repoName}`,
+      blocks: [
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: `New repository created! ✨ \n The app was installed to the ${repoName} repository in the <${context.payload.installation.account.html_url}|${owner}> organization! :tada:`,
+          },
+          accessory: {
+            type: "image",
+            image_url: `https://api.dicebear.com/5.x/micah/png?seed=${context.id}&mouth=frown,nervous,sad,surprised`,
+            alt_text: "image",
+          },
+        },
+        {
+          type: "divider",
+        },
+      ],
     });
 
     return;
