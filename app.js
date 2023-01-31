@@ -151,6 +151,9 @@ module.exports = (app) => {
       return;
     }
 
+    const image_url = `https://api.dicebear.com/5.x/thumbs/svg?seed=${short.generate()}`;
+    console.log(image_url);
+
     await axios.post(SLACK_WEBHOOK_URL, {
       blocks: [
         {
@@ -161,8 +164,47 @@ module.exports = (app) => {
           },
           accessory: {
             type: "image",
-            image_url: `https://api.dicebear.com/5.x/thumbs/svg?seed=${short.generate()}`,
-            alt_text: "cute cat",
+            image_url,
+            alt_text: "image",
+          },
+        },
+        {
+          type: "divider",
+        },
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: "View the repository.",
+          },
+          accessory: {
+            type: "button",
+            text: {
+              type: "plain_text",
+              text: repoName[0],
+              emoji: true,
+            },
+            value: "click_me_123",
+            url: context.payload.repository.html_url,
+            action_id: "button-action",
+          },
+        },
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: "View the user.",
+          },
+          accessory: {
+            type: "button",
+            text: {
+              type: "plain_text",
+              text: context.payload.sender.login,
+              emoji: true,
+            },
+            value: "click_me_123",
+            url: context.payload.sender.html_url,
+            action_id: "button-action",
           },
         },
       ],
@@ -181,8 +223,63 @@ module.exports = (app) => {
       return;
     }
 
+    const image_url = `https://api.dicebear.com/5.x/micah/svg?seed=${short.generate()}&mouth=frown,nervous,sad,surprised`;
+    console.log(image_url);
+
     await axios.post(SLACK_WEBHOOK_URL, {
-      text: `Star deleted by ${context.payload.sender.login} in ${context.payload.repository.full_name}`,
+      blocks: [
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: `Star removed! :star: \n The ${repoName[0]} repository in the ${repoName[1]} organization lost a star from ${context.payload.sender.login}! :cry: `,
+          },
+          accessory: {
+            type: "image",
+            image_url,
+            alt_text: "image",
+          },
+        },
+        {
+          type: "divider",
+        },
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: "View the repository.",
+          },
+          accessory: {
+            type: "button",
+            text: {
+              type: "plain_text",
+              text: repoName[0],
+              emoji: true,
+            },
+            value: "click_me_123",
+            url: context.payload.repository.html_url,
+            action_id: "button-action",
+          },
+        },
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: "View the user.",
+          },
+          accessory: {
+            type: "button",
+            text: {
+              type: "plain_text",
+              text: context.payload.sender.login,
+              emoji: true,
+            },
+            value: "click_me_123",
+            url: context.payload.sender.html_url,
+            action_id: "button-action",
+          },
+        },
+      ],
     });
 
     return;
