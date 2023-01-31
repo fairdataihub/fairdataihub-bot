@@ -1,5 +1,6 @@
 "use strict";
 
+const short = require("short-uuid");
 const axios = require("axios");
 require("dotenv").config();
 
@@ -151,7 +152,20 @@ module.exports = (app) => {
     }
 
     await axios.post(SLACK_WEBHOOK_URL, {
-      text: `New star created by ${context.payload.sender.login} in ${context.payload.repository.full_name}`,
+      blocks: [
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: `New star created! :star: \n The ${repoName[0]} repository in the ${repoName[1]} organization was just starred by ${context.payload.sender.login}! :tada: `,
+          },
+          accessory: {
+            type: "image",
+            image_url: `https://api.dicebear.com/5.x/thumbs/svg?seed=${short.generate()}`,
+            alt_text: "cute cat",
+          },
+        },
+      ],
     });
 
     return;
