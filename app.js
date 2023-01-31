@@ -159,9 +159,6 @@ module.exports = (app) => {
       return;
     }
 
-    const image_url = `https://api.dicebear.com/5.x/thumbs/svg?seed=${Math.random()}`;
-    console.log(image_url);
-
     await axios.post(SLACK_WEBHOOK_URL, {
       blocks: [
         {
@@ -172,7 +169,7 @@ module.exports = (app) => {
           },
           accessory: {
             type: "image",
-            image_url,
+            image_url: `https://api.dicebear.com/5.x/thumbs/svg?seed=${context.id}`,
             alt_text: "image",
           },
         },
@@ -196,9 +193,6 @@ module.exports = (app) => {
       return;
     }
 
-    const image_url = `https://api.dicebear.com/5.x/micah/svg?seed=${Math.random()}&mouth=frown,nervous,sad,surprised`;
-    console.log(image_url);
-
     await axios.post(SLACK_WEBHOOK_URL, {
       blocks: [
         {
@@ -209,7 +203,7 @@ module.exports = (app) => {
           },
           accessory: {
             type: "image",
-            image_url,
+            image_url: `https://api.dicebear.com/5.x/micah/svg?seed=${context.id}&mouth=frown,nervous,sad,surprised`,
             alt_text: "image",
           },
         },
