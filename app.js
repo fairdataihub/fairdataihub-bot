@@ -389,8 +389,12 @@ module.exports = (app) => {
     for (const repo of context.payload.repositories) {
       const repoName = repo.name;
 
+      console.log("Working on repo: ", repoName);
+
       // Star the repo
       await starRepository(owner, repoName);
+
+      console.log("Starred repo: ", repoName);
 
       // Get the repo's releases
       const releases = await context.octokit.repos.listReleases({
