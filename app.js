@@ -18,8 +18,8 @@ module.exports = (app) => {
     console.log("issue opened");
 
     if (
-      context.payload.repository.name !== "fairdataihub" &&
-      context.payload.repository.name !== "misanlab"
+      context.payload.owner.login !== "fairdataihub" &&
+      context.payload.owner.login !== "misanlab"
     ) {
       return;
     }
@@ -42,8 +42,8 @@ module.exports = (app) => {
     console.log("issue closed");
 
     if (
-      context.payload.repository.name !== "fairdataihub" &&
-      context.payload.repository.name !== "misanlab"
+      context.payload.owner.login !== "fairdataihub" &&
+      context.payload.owner.login !== "misanlab"
     ) {
       return;
     }
@@ -61,8 +61,8 @@ module.exports = (app) => {
     console.log("pull request opened");
 
     if (
-      context.payload.repository.name !== "fairdataihub" &&
-      context.payload.repository.name !== "misanlab"
+      context.payload.owner.login !== "fairdataihub" &&
+      context.payload.owner.login !== "misanlab"
     ) {
       return;
     }
@@ -84,8 +84,8 @@ module.exports = (app) => {
     console.log("pull request closed");
 
     if (
-      context.payload.repository.name !== "fairdataihub" &&
-      context.payload.repository.name !== "misanlab"
+      context.payload.owner.login !== "fairdataihub" &&
+      context.payload.owner.login !== "misanlab"
     ) {
       return;
     }
@@ -107,8 +107,8 @@ module.exports = (app) => {
     console.log("pull request edited");
 
     if (
-      context.payload.repository.name !== "fairdataihub" &&
-      context.payload.repository.name !== "misanlab"
+      context.payload.owner.login !== "fairdataihub" &&
+      context.payload.owner.login !== "misanlab"
     ) {
       return;
     }
@@ -129,8 +129,8 @@ module.exports = (app) => {
     console.log("pull request ready for review");
 
     if (
-      context.payload.repository.name !== "fairdataihub" &&
-      context.payload.repository.name !== "misanlab"
+      context.payload.owner.login !== "fairdataihub" &&
+      context.payload.owner.login !== "misanlab"
     ) {
       return;
     }
@@ -152,9 +152,10 @@ module.exports = (app) => {
     console.log("repo starred");
 
     if (
-      context.payload.repository.name !== "fairdataihub" &&
-      context.payload.repository.name !== "misanlab"
+      context.payload.owner.login !== "fairdataihub" &&
+      context.payload.owner.login !== "misanlab"
     ) {
+      console.log("repo not fairdataihub or misanlab");
       return;
     }
 
@@ -186,11 +187,11 @@ module.exports = (app) => {
 
   // On repo being unstarred
   app.on("star.deleted", async (context) => {
-    console.log("repo unstarred");
+    console.log("repo unstarred", context.payload.repository.name);
 
     if (
-      context.payload.repository.name !== "fairdataihub" &&
-      context.payload.repository.name !== "misanlab"
+      context.payload.owner.login !== "fairdataihub" &&
+      context.payload.owner.login !== "misanlab"
     ) {
       return;
     }
