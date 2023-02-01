@@ -379,7 +379,6 @@ module.exports = (app) => {
     console.log("app installed");
 
     const owner = context.payload.installation.account.login;
-    console.log("owner: ", owner);
 
     // Check if the repo is in the fairdataihub or misanlab org
     if (owner !== "fairdataihub" && owner !== "misanlab") {
@@ -389,12 +388,8 @@ module.exports = (app) => {
     for (const repo of context.payload.repositories) {
       const repoName = repo.name;
 
-      console.log("Working on repo: ", repoName);
-
       // Star the repo
       await starRepository(owner, repoName);
-
-      console.log("Starred repo: ", repoName);
 
       // Get the repo's releases
       const releases = await context.octokit.repos.listReleases({
