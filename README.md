@@ -32,4 +32,4 @@ For more, check out the [Contributing Guide](CONTRIBUTING.md).
 
 ## License
 
-[ISC](LICENSE) © 2023 fairdataihub
+[MIT](LICENSE) © 2023 fairdataihub
