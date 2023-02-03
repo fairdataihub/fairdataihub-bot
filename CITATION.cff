@@ -1,0 +1,33 @@
+# This CITATION.cff file was generated with FAIRshare.
+# Visit https://fairdataihub.org/fairshare to learn more!
+
+abstract: A GitHub App that automates some of the tasks in the FAIR Data Innovations
+  Hub GitHub organization
+authors:
+- affiliation: FAIR Data Innovations Hub
+  email: ssoundarajan@calmi2.org
+  family-names: Soundarajan
+  given-names: Sanjay
+  orcid: 0000-0003-2829-8032
+- affiliation: California Medical Innovations Institute
+  email: bpatel@calmi2.org
+  family-names: Patel
+  given-names: Bhavesh
+  orcid: 0000-0002-0307-262X
+cff-version: 1.2.0
+date-released: '2023-02-03T09:45:14.581Z'
+identifiers:
+- description: DOI for this software's record on Zenodo
+  type: doi
+  value: 10.5281/zenodo.7602309
+keywords:
+- bot
+- FAIR
+license: MIT
+message: If you use this software, please cite it as below.
+repository-artifact: https://github.com/apps/fairdataihub-bot
+repository-code: https://github.com/fairdataihub/fairdataihub-bot
+title: fairdataihub bot GitHub App
+type: software
+url: https://fairdataihub.org/
+version: 1.0.0
