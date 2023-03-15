@@ -331,9 +331,9 @@
   integrity sha512-lxJ9R5ygVm8ZWgYdUweoq5ownDlJ4upvoWmO4eLxBYHdMo+vZ/Rx0EN6MbKWDJOSUGrqJy2Gt+Dyv/VKml0fjg==
 
 "@fairdataihub/config@^2.1.0", "@fairdataihub/config@^2.2.1":
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/@fairdataihub/config/-/config-2.2.1.tgz#81a5ab4727c0879ac88fa2de9f23a32b9271b703"
-  integrity sha512-f9PCK7MhahyQB3yaSzbA5vOFOLPOZabZLc8J5rpg45bPI8um8q0nssknKmV2x1EGY9GJXzxD0AVs4YocZjjt+w==
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/@fairdataihub/config/-/config-2.2.2.tgz#d701bf5f7892d0a052b4e49012c3674f53d4fe6d"
+  integrity sha512-mQwoTncs142ryfEmj0LmAOC0STvlWbyoM960llaQu9clG2g7Fb8sD14LSyjtBPfEVWwXkmHxCP1jCyk0rGppdQ==
   dependencies:
     "@fairdataihub/config" "^2.1.0"
     "@semantic-release/git" "^10.0.1"
