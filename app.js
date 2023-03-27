@@ -27,6 +27,13 @@ module.exports = (app) => {
       return;
     }
 
+    /**
+     * * Don't respond to the status messages
+     */
+    if (context.payload.repository.name === "uptime" || context.payload.repository.name === "upptime") {
+      return;
+    }
+
     const issueComment = context.issue({
       body: "Hello! Thank you for opening this issue. Your input is valuable and helps improve the project. Can you please provide a detailed description of the problem you're encountering? Any additional information such as steps to reproduce the issue would be greatly appreciated. Thank you!",
     });
@@ -76,6 +83,13 @@ module.exports = (app) => {
       context.payload.repository.owner.login !== "fairdataihub" &&
       context.payload.repository.owner.login !== "misanlab"
     ) {
+      return;
+    }
+
+    /**
+     * * Don't respond to the status messages
+     */
+    if (context.payload.repository.name === "uptime" || context.payload.repository.name === "upptime") {
       return;
     }
 
