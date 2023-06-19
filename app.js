@@ -27,11 +27,23 @@ module.exports = (app) => {
       return;
     }
 
-    /**
-     * * Don't respond to the status messages
-     */
-    if (context.payload.repository.name === "uptime" || context.payload.repository.name === "upptime") {
+    // Don't respond to the status messages
+    if (
+      context.payload.repository.name === "uptime" ||
+      context.payload.repository.name === "upptime"
+    ) {
       return;
+    }
+
+    // Don't respond to the issues opened by our bots or renovate
+    if (context.payload.issue.user.type === "Bot") {
+      if (
+        context.payload.issue.user.login === "renovate[bot]" ||
+        context.payload.issue.user.login === "doi-checker-app[bot]" ||
+        context.payload.issue.user.login === "license-check-bot[bot]"
+      ) {
+        return;
+      }
     }
 
     const issueComment = context.issue({
@@ -89,8 +101,22 @@ module.exports = (app) => {
     /**
      * * Don't respond to the status messages
      */
-    if (context.payload.repository.name === "uptime" || context.payload.repository.name === "upptime") {
+    if (
+      context.payload.repository.name === "uptime" ||
+      context.payload.repository.name === "upptime"
+    ) {
       return;
+    }
+
+    // Don't respond to the issues closed by our bots or renovate
+    if (context.payload.issue.user.type === "Bot") {
+      if (
+        context.payload.issue.user.login === "renovate[bot]" ||
+        context.payload.issue.user.login === "doi-checker-app[bot]" ||
+        context.payload.issue.user.login === "license-check-bot[bot]"
+      ) {
+        return;
+      }
     }
 
     const issueComment = context.issue({
@@ -113,6 +139,13 @@ module.exports = (app) => {
       context.payload.repository.owner.login !== "misanlab"
     ) {
       return;
+    }
+
+    // Don't respond to the pull requests opened by renovate
+    if (context.payload.pull_request.user.type === "Bot") {
+      if (context.payload.pull_request.user.login === "renovate[bot]") {
+        return;
+      }
     }
 
     // Get the pull request number
@@ -141,6 +174,13 @@ module.exports = (app) => {
       return;
     }
 
+    // Don't respond to the pull requests closed by renovate
+    if (context.payload.pull_request.user.type === "Bot") {
+      if (context.payload.pull_request.user.login === "renovate[bot]") {
+        return;
+      }
+    }
+
     // Get the pull request number
     const prNumber = context.payload.pull_request.number;
 
@@ -165,6 +205,13 @@ module.exports = (app) => {
       context.payload.repository.owner.login !== "misanlab"
     ) {
       return;
+    }
+
+    // Don't respond to the pull requests opened by renovate
+    if (context.payload.pull_request.user.type === "Bot") {
+      if (context.payload.pull_request.user.login === "renovate[bot]") {
+        return;
+      }
     }
 
     // Get the pull request number
