@@ -371,6 +371,14 @@ module.exports = (app) => {
       return;
     }
 
+    // if the repository name is SODA-for-SPARC and the release is a beta release, return
+    if (
+      context.payload.repository.name === "SODA-for-SPARC" &&
+      context.payload.release.name.includes("beta")
+    ) {
+      return;
+    }
+
     // Get the release
     const release = context.payload.release;
 
