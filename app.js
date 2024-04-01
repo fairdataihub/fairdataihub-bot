@@ -40,7 +40,8 @@ module.exports = (app) => {
       if (
         context.payload.issue.user.login === "renovate[bot]" ||
         context.payload.issue.user.login === "doi-checker-app[bot]" ||
-        context.payload.issue.user.login === "license-check-bot[bot]"
+        context.payload.issue.user.login === "license-check-bot[bot]" || 
+        context.payload.issue.user.login === "codefair-app[bot]"
       ) {
         return;
       }
