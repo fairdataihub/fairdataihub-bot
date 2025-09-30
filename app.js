@@ -117,7 +117,9 @@ module.exports = (app) => {
         context.payload.issue.user.login === "renovate[bot]" ||
         context.payload.issue.user.login === "doi-checker-app[bot]" ||
         context.payload.issue.user.login === "license-check-bot[bot]" ||
-        context.payload.issue.user.login === "codefair-app[bot]"
+        context.payload.issue.user.login === "codefair-app[bot]" ||
+        context.payload.issue.user.login === "sourcery-ai[bot]" ||
+        context.payload.issue.user.login === "vercel[bot]"
       ) {
         return;
       }
