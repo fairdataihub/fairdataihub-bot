@@ -32,6 +32,15 @@ yarn install
 yarn start
 ```
 
+## Environment Variables
+
+- `SLACK_WEBHOOK_URL` (optional): Slack incoming webhook URL for notifications.
+- `GITHUB_PAT` (optional): Personal access token fallback used when some repository actions fail with installation tokens.
+- `WEBHOOK_DEDUP_REDIS_URL` (optional): Redis connection string for cross-instance webhook de-duplication.
+- `REDIS_URL` (optional): Fallback Redis connection string if `WEBHOOK_DEDUP_REDIS_URL` is not set.
+
+If no Redis URL is configured, the bot uses in-memory de-duplication. This works in single-instance deployments but does not prevent duplicates across multiple instances.
+
 ## Docker
 
 ```sh
