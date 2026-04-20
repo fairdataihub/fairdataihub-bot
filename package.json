@@ -1,11 +1,11 @@
 {
-  "name": "doi-check-app",
+  "name": "fairdataihub-bot",
   "version": "0.0.9",
   "private": true,
-  "description": "GitHub App that opens an issue on repositories when a DOI is not found in the README",
+  "description": "helper bot for fairdataihub",
   "author": "megasanjay",
   "license": "ISC",
-  "homepage": "https://github.com//",
+  "homepage": "https://github.com/fairdataihub/fairdataihub-bot",
   "keywords": [
     "probot",
     "github",
@@ -17,9 +17,9 @@
   },
   "dependencies": {
     "@octokit/rest": "^19.0.7",
-    "axios": "^1.2.6",
     "dotenv": "^16.0.3",
-    "probot": "^12.2.4"
+    "probot": "^12.2.4",
+    "redis": "^4.7.0"
   },
   "devDependencies": {
     "@fairdataihub/config": "^2.2.1",
@@ -33,7 +33,7 @@
     "smee-client": "^1.2.2"
   },
   "engines": {
-    "node": ">= 10.13.0"
+    "node": ">= 20"
   },
   "jest": {
     "testEnvironment": "node"
